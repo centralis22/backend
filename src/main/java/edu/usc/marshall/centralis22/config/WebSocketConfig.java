@@ -1,9 +1,7 @@
 package edu.usc.marshall.centralis22.config;
 
 import edu.usc.marshall.centralis22.handler.WebSocketAPIHandler;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
@@ -19,16 +17,17 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
+    private final WebSocketAPIHandler webSocketAPIHandler;
+
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry
-                .addHandler(wscWebSocketAPIHandler(), "/api")
+                .addHandler(webSocketAPIHandler, "/api")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
 
-    @Bean
-    public WebSocketHandler wscWebSocketAPIHandler() {
-        return new WebSocketAPIHandler();
+    public WebSocketConfig(WebSocketAPIHandler webSocketAPIHandler) {
+        this.webSocketAPIHandler = webSocketAPIHandler;
     }
 }
