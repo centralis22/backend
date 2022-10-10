@@ -1,4 +1,4 @@
-package edu.usc.marshall.centralis22.service.handler;
+package edu.usc.marshall.centralis22.service.requesthandler;
 
 import edu.usc.marshall.centralis22.util.RequestResponseEntity;
 

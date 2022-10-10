@@ -1,33 +1,34 @@
 package edu.usc.marshall.centralis22.util;
 
+/**
+ *
+ */
 public class RequestResponseEntity {
     public String type = "respond";
-    public long respond_id;
+    public long respond_id = -1;
     public int status_code;
     public String status_message;
     public Object content;
 
-    public RequestResponseEntity csetRespondId(long respondId) {
+    public RequestResponseEntity setRespondId(long respondId) {
         this.respond_id = respondId;
         return this;
     }
 
-    public RequestResponseEntity csetStatusCode(int status_code) {
+    public RequestResponseEntity setStatusCode(int status_code) {
         this.status_code = status_code;
         return this;
     }
 
-    public RequestResponseEntity csetStatusMessage(String status_message) {
+    public RequestResponseEntity setStatusMessage(String status_message) {
         this.status_message = status_message;
         return this;
     }
 
-    public RequestResponseEntity csetContent(Object content) {
+    public RequestResponseEntity setContent(Object content) {
         this.content = content;
         return this;
     }
-
-
 
     public RequestResponseEntity(
             String type,

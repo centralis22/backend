@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
  * Temporary object to store user information.
  */
 @Component
-@Scope(scopeName = "websocket", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserPersistenceService {
 
     private final InstructorRepository insr;

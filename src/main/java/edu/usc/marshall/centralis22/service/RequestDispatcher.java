@@ -1,18 +1,22 @@
 package edu.usc.marshall.centralis22.service;
 
-import edu.usc.marshall.centralis22.service.handler.CreateSessionHandler;
-import edu.usc.marshall.centralis22.service.handler.LoginHandler;
-import edu.usc.marshall.centralis22.service.handler.RequestHandler;
+import edu.usc.marshall.centralis22.service.requesthandler.CreateSessionHandler;
+import edu.usc.marshall.centralis22.service.requesthandler.LoginHandler;
+import edu.usc.marshall.centralis22.service.requesthandler.RequestHandler;
 import edu.usc.marshall.centralis22.util.RequestResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 /**
- * Wrapper of {@link RequestHandler}.
+ * Wrapper of {@link RequestHandler}. Sorts each request by type.
  */
 @Service
 public class RequestDispatcher {
+
+    public LoginHandler loginHandler;
+    public CreateSessionHandler createSessionHandler;
 
     /**
      * Calls the corresponding {@link RequestHandler} implementation based on
@@ -31,16 +35,30 @@ public class RequestDispatcher {
 
         switch(request) {
             case "login":
-                requestHandler = new LoginHandler();
+                requestHandler = loginHandler;
                 break;
             case "create_session":
-                requestHandler = new CreateSessionHandler();
+                requestHandler = createSessionHandler;
                 break;
             default:
-                requestHandler = (contentDummy, rreDummy) -> {};
+                requestHandler = (contentDummy, rreDummy) -> {
+                    rreDummy
+                            .setStatusCode(400)
+                            .setStatusMessage("Request type error.");
+                };
                 break;
         }
 
         requestHandler.handle(content, rre);
+    }
+
+    @Autowired
+    public void setLoginHandler(LoginHandler loginHandler) {
+        this.loginHandler = loginHandler;
+    }
+
+    @Autowired
+    public void setCreateSessionHandler(CreateSessionHandler createSessionHandler) {
+        this.createSessionHandler = createSessionHandler;
     }
 }

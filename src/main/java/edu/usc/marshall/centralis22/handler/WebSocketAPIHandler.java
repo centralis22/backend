@@ -1,5 +1,6 @@
 package edu.usc.marshall.centralis22.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.usc.marshall.centralis22.security.UserPersistenceService;
 import edu.usc.marshall.centralis22.service.RequestDispatcher;
 import edu.usc.marshall.centralis22.util.RequestResponseEntity;
@@ -18,11 +19,13 @@ import java.util.Map;
 public class WebSocketAPIHandler extends TextWebSocketHandler {
 
     private final RequestDispatcher dispatcher;
-    private final UserPersistenceService user;
 
     /**
-     * Reads in the message. Parses it according to the API,
-     *  validates credentials, and processes the request.
+     * Receives a message, parses it into a map according to the API,
+     * and forwards the content to a handler.
+     *
+     * <p>The handler handles server-client I/O. In addition, it checks
+     * JSON parsing errors, and ensures that a response can be made.
      */
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
@@ -30,31 +33,35 @@ public class WebSocketAPIHandler extends TextWebSocketHandler {
         Logger logger = LoggerFactory.getLogger(WebSocketAPIHandler.class);
         logger.trace(session.getId() + ": " + message);
 
+        // RequestResponseEntity passed-by-reference to concrete handlers.
         RequestResponseEntity rre = new RequestResponseEntity();
 
         try {
             Map<String, Object> data = JacksonUtil.toMap(message.getPayload());
             int respondId = (int)data.get("request_id");
-            rre.csetRespondId(respondId);
+            rre.setRespondId(respondId);
             dispatcher.dispatch(data, rre);
         }
-        catch(Exception e)
-        {
-            logger.warn(e.getMessage());
-            // TODO: send status_response
-            session.sendMessage(new TextMessage("U fked up!"));
+        catch(JsonProcessingException jpe) {
+            logger.warn("JPE: " + jpe.getMessage());
+            rre
+                    .setStatusCode(400)
+                    .setContent("JSON processing error.");
+        }
+        catch(Exception e) {
+            logger.error("E: " + e.getMessage());
+            e.printStackTrace(System.err);
+            rre
+                    .setStatusCode(500)
+                    .setContent("Internal server error.");
         }
 
         TextMessage msg = new TextMessage(rre.toString());
-        String test = rre.toString();
-        System.out.println(test);
         session.sendMessage(msg);
     }
 
     public WebSocketAPIHandler(
-            RequestDispatcher dispatcher,
-            UserPersistenceService user) {
+            RequestDispatcher dispatcher) {
         this.dispatcher = dispatcher;
-        this.user = user;
     }
 }

@@ -6,12 +6,9 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
-/*
- * Sets up a simple WebSocket.
- * https://stackoverflow.com/questions/27158106/websocket-with-sockjs-spring-4-but-without-stomp
- *
- * Enables CORS
- * Spring docs 25.2.6 WebSocket Support, Configuring allowed origins
+/**
+ * Basic configurations for WebSocket, including url mappings,
+ * and security settings.
  */
 @Configuration
 @EnableWebSocket

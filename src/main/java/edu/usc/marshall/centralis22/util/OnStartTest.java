@@ -8,6 +8,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Used for backend self testing only.
@@ -20,7 +21,14 @@ public class OnStartTest {
 
     @EventListener(ApplicationReadyEvent.class)
     public void createDummySession() {
-        Session s = new Session(4442, LocalDate.now(), 1);
+        Session s = new Session(424200, LocalDate.now(), 1);
         sr.save(s);
+        Session t = new Session(424201, LocalDate.now(), 2);
+        sr.save(t);
+
+        List<Integer> seids = sr.getAllSeid();
+        for(Integer seid : seids) {
+            System.out.println(seid);
+        }
     }
 }
