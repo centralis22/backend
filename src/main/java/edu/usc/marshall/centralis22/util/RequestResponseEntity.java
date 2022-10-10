@@ -1,33 +1,33 @@
 package edu.usc.marshall.centralis22.util;
 
-import org.hibernate.boot.jaxb.mapping.spi.JaxbForeignKey;
-
 public class RequestResponseEntity {
-    String type = "respond";
-    long respond_id;
-    int status_code;
-    String status_message;
-    Object content;
+    public String type = "respond";
+    public long respond_id;
+    public int status_code;
+    public String status_message;
+    public Object content;
 
-    public RequestResponseEntity setRespondId(long respondId) {
+    public RequestResponseEntity csetRespondId(long respondId) {
         this.respond_id = respondId;
         return this;
     }
 
-    public RequestResponseEntity setStatusCode(int status_code) {
+    public RequestResponseEntity csetStatusCode(int status_code) {
         this.status_code = status_code;
         return this;
     }
 
-    public RequestResponseEntity setStatusMessage(String status_message) {
+    public RequestResponseEntity csetStatusMessage(String status_message) {
         this.status_message = status_message;
         return this;
     }
 
-    public RequestResponseEntity setContent(Object content) {
+    public RequestResponseEntity csetContent(Object content) {
         this.content = content;
         return this;
     }
+
+
 
     public RequestResponseEntity(
             String type,
@@ -53,6 +53,7 @@ public class RequestResponseEntity {
         }
         catch(Exception e) {
             // TODO: Do something about it.
+            System.out.println(e.getMessage());
         }
         return "";
     }

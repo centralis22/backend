@@ -1,5 +1,8 @@
 package edu.usc.marshall.centralis22.service;
 
+import edu.usc.marshall.centralis22.service.handler.CreateSessionHandler;
+import edu.usc.marshall.centralis22.service.handler.LoginHandler;
+import edu.usc.marshall.centralis22.service.handler.RequestHandler;
 import edu.usc.marshall.centralis22.util.RequestResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +32,9 @@ public class RequestDispatcher {
         switch(request) {
             case "login":
                 requestHandler = new LoginHandler();
+                break;
+            case "create_session":
+                requestHandler = new CreateSessionHandler();
                 break;
             default:
                 requestHandler = (contentDummy, rreDummy) -> {};

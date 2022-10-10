@@ -1,6 +1,6 @@
 package edu.usc.marshall.centralis22.handler;
 
-import edu.usc.marshall.centralis22.security.UserPersistenceSvc;
+import edu.usc.marshall.centralis22.security.UserPersistenceService;
 import edu.usc.marshall.centralis22.service.RequestDispatcher;
 import edu.usc.marshall.centralis22.util.RequestResponseEntity;
 import edu.usc.marshall.centralis22.util.JacksonUtil;
@@ -18,7 +18,7 @@ import java.util.Map;
 public class WebSocketAPIHandler extends TextWebSocketHandler {
 
     private final RequestDispatcher dispatcher;
-    private final UserPersistenceSvc user;
+    private final UserPersistenceService user;
 
     /**
      * Reads in the message. Parses it according to the API,
@@ -35,23 +35,25 @@ public class WebSocketAPIHandler extends TextWebSocketHandler {
         try {
             Map<String, Object> data = JacksonUtil.toMap(message.getPayload());
             int respondId = (int)data.get("request_id");
-            rre.setRespondId(respondId);
+            rre.csetRespondId(respondId);
             dispatcher.dispatch(data, rre);
         }
         catch(Exception e)
         {
             logger.warn(e.getMessage());
-            // TODO: sent status_response
+            // TODO: send status_response
             session.sendMessage(new TextMessage("U fked up!"));
         }
 
         TextMessage msg = new TextMessage(rre.toString());
+        String test = rre.toString();
+        System.out.println(test);
         session.sendMessage(msg);
     }
 
     public WebSocketAPIHandler(
             RequestDispatcher dispatcher,
-            UserPersistenceSvc user) {
+            UserPersistenceService user) {
         this.dispatcher = dispatcher;
         this.user = user;
     }
