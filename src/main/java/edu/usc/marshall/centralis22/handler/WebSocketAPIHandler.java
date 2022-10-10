@@ -3,7 +3,7 @@ package edu.usc.marshall.centralis22.handler;
 import edu.usc.marshall.centralis22.security.UserPersistenceSvc;
 import edu.usc.marshall.centralis22.service.RequestDispatcher;
 import edu.usc.marshall.centralis22.util.RequestResponseEntity;
-import edu.usc.marshall.centralis22.util.JSONToMap;
+import edu.usc.marshall.centralis22.util.JacksonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -33,18 +33,19 @@ public class WebSocketAPIHandler extends TextWebSocketHandler {
         RequestResponseEntity rre = new RequestResponseEntity();
 
         try {
-            Map<String, Object> data = JSONToMap.toMap(message.getPayload());
-            int requestId = (int)data.get("request_id");
-            rre.setRequestId(requestId);
+            Map<String, Object> data = JacksonUtil.toMap(message.getPayload());
+            int respondId = (int)data.get("request_id");
+            rre.setRespondId(respondId);
             dispatcher.dispatch(data, rre);
         }
         catch(Exception e)
         {
             logger.warn(e.getMessage());
             // TODO: sent status_response
+            session.sendMessage(new TextMessage("U fked up!"));
         }
 
-        TextMessage msg = new TextMessage("Hello, " + message.getPayload() + "!" + session.getId());
+        TextMessage msg = new TextMessage(rre.toString());
         session.sendMessage(msg);
     }
 

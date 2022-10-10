@@ -12,5 +12,7 @@ public class LoginHandler implements RequestHandler {
         System.out.println(loginContent.get("user_type"));
         System.out.println(loginContent.get("user_pswd"));
         System.out.println(loginContent.get("session_id"));
+
+        rre.setStatusCode(200);
     }
 }

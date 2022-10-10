@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.type.MapType;
 
 import java.util.Map;
 
-public class JSONToMap {
+public class JacksonUtil {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -22,5 +22,9 @@ public class JSONToMap {
     // https://stackoverflow.com/questions/13916086/jackson-recursive-parsing-into-mapstring-object
     public static Map<String, Object> toMap(String message) throws JsonProcessingException {
         return mapper.readValue(message, type);
+    }
+
+    public static ObjectMapper objectMapper() {
+        return mapper;
     }
 }
