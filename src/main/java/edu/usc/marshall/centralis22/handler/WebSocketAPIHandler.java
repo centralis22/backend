@@ -1,5 +1,6 @@
 package edu.usc.marshall.centralis22.handler;
 
+import edu.usc.marshall.centralis22.security.UserPersistenceSvc;
 import edu.usc.marshall.centralis22.service.RequestDispatcher;
 import edu.usc.marshall.centralis22.util.RequestResponseEntity;
 import edu.usc.marshall.centralis22.util.JSONToMap;
@@ -17,6 +18,7 @@ import java.util.Map;
 public class WebSocketAPIHandler extends TextWebSocketHandler {
 
     private final RequestDispatcher dispatcher;
+    private final UserPersistenceSvc user;
 
     /**
      * Reads in the message. Parses it according to the API,
@@ -28,19 +30,13 @@ public class WebSocketAPIHandler extends TextWebSocketHandler {
         Logger logger = LoggerFactory.getLogger(WebSocketAPIHandler.class);
         logger.trace(session.getId() + ": " + message);
 
-        RequestResponseEntity are = new RequestResponseEntity();
+        RequestResponseEntity rre = new RequestResponseEntity();
 
         try {
             Map<String, Object> data = JSONToMap.toMap(message.getPayload());
-
-            // TODO: auth
-
-            // TODO: handle action
-            dispatcher.dispatch(
-                    (String)data.get("request"),
-                    data.get("content"),
-                    are
-            );
+            int requestId = (int)data.get("request_id");
+            rre.setRequestId(requestId);
+            dispatcher.dispatch(data, rre);
         }
         catch(Exception e)
         {
@@ -52,7 +48,10 @@ public class WebSocketAPIHandler extends TextWebSocketHandler {
         session.sendMessage(msg);
     }
 
-    public WebSocketAPIHandler(RequestDispatcher dispatcher) {
+    public WebSocketAPIHandler(
+            RequestDispatcher dispatcher,
+            UserPersistenceSvc user) {
         this.dispatcher = dispatcher;
+        this.user = user;
     }
 }

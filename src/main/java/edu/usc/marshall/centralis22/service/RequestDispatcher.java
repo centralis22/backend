@@ -3,6 +3,8 @@ package edu.usc.marshall.centralis22.service;
 import edu.usc.marshall.centralis22.util.RequestResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 /**
  * Wrapper of {@link RequestHandler}.
  */
@@ -11,22 +13,25 @@ public class RequestDispatcher {
 
     /**
      * Calls the corresponding {@link RequestHandler} implementation based on
-     * {@code request}.
+     * {@code request}. The data must be in compliance with the API. If not,
+     * an exception will be thrown, failing the request.
      *
-     * @param request See API.
-     * @param content See API.
-     * @param rre See API.
+     * @param data JSON object provided by the frontend.
+     * @param rre Return response to a request.
      */
-    public void dispatch(String request, Object content, RequestResponseEntity rre) {
+    public void dispatch(Map<String, Object> data, RequestResponseEntity rre) {
 
         RequestHandler requestHandler;
 
+        String request = (String)data.get("request");
+        Object content = data.get("content");
+
         switch(request) {
-            case "advance_stage":
-                requestHandler = new AdvanceStageHandler();
+            case "login":
+                requestHandler = new LoginHandler();
                 break;
             default:
-                requestHandler = (contentDummy, areDummy) -> {};
+                requestHandler = (contentDummy, rreDummy) -> {};
                 break;
         }
 

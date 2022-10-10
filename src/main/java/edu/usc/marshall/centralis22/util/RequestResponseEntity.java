@@ -5,7 +5,7 @@ public class RequestResponseEntity {
     int statusCode;
     String message;
 
-    public RequestResponseEntity setActionId(long actionId) {
+    public RequestResponseEntity setRequestId(long actionId) {
         this.actionId = actionId;
         return this;
     }
