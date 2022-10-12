@@ -1,6 +1,6 @@
 package edu.usc.marshall.centralis22.util;
 
-import edu.usc.marshall.centralis22.model.Session;
+import edu.usc.marshall.centralis22.model.SimSession;
 import edu.usc.marshall.centralis22.repository.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -21,9 +21,9 @@ public class OnStartTest {
 
     @EventListener(ApplicationReadyEvent.class)
     public void createDummySession() {
-        Session s = new Session(424200, LocalDate.now(), 1);
+        SimSession s = new SimSession(424200, LocalDate.now(), 1);
         sr.save(s);
-        Session t = new Session(424201, LocalDate.now(), 2);
+        SimSession t = new SimSession(424201, LocalDate.now(), 2);
         sr.save(t);
 
         List<Integer> seids = sr.getAllSeid();

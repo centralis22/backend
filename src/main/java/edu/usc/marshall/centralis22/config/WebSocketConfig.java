@@ -1,6 +1,7 @@
 package edu.usc.marshall.centralis22.config;
 
 import edu.usc.marshall.centralis22.handler.WebSocketAPIHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
@@ -24,6 +25,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 .withSockJS();
     }
 
+    @Autowired
     public WebSocketConfig(WebSocketAPIHandler webSocketAPIHandler) {
         this.webSocketAPIHandler = webSocketAPIHandler;
     }

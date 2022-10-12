@@ -1,5 +1,6 @@
 package edu.usc.marshall.centralis22.service;
 
+import edu.usc.marshall.centralis22.model.SimUser;
 import edu.usc.marshall.centralis22.service.requesthandler.CreateSessionHandler;
 import edu.usc.marshall.centralis22.service.requesthandler.LoginHandler;
 import edu.usc.marshall.centralis22.service.requesthandler.RequestHandler;
@@ -23,10 +24,11 @@ public class RequestDispatcher {
      * {@code request}. The data must be in compliance with the API. If not,
      * an exception will be thrown, failing the request.
      *
+     * @param user
      * @param data JSON object provided by the frontend.
      * @param rre Return response to a request.
      */
-    public void dispatch(Map<String, Object> data, RequestResponseEntity rre) {
+    public void dispatch(SimUser user, Map<String, Object> data, RequestResponseEntity rre) {
 
         RequestHandler requestHandler;
 
@@ -41,15 +43,15 @@ public class RequestDispatcher {
                 requestHandler = createSessionHandler;
                 break;
             default:
-                requestHandler = (contentDummy, rreDummy) -> {
-                    rreDummy
+                requestHandler = (dUser, dContent, dRRE) -> {
+                    dRRE
                             .setStatusCode(400)
                             .setStatusMessage("Request type error.");
                 };
                 break;
         }
 
-        requestHandler.handle(content, rre);
+        requestHandler.handle(user, content, rre);
     }
 
     @Autowired

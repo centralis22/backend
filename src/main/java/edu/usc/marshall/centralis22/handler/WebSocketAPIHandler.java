@@ -1,13 +1,16 @@
 package edu.usc.marshall.centralis22.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import edu.usc.marshall.centralis22.model.SimUser;
 import edu.usc.marshall.centralis22.security.UserPersistenceService;
 import edu.usc.marshall.centralis22.service.RequestDispatcher;
-import edu.usc.marshall.centralis22.util.RequestResponseEntity;
 import edu.usc.marshall.centralis22.util.JacksonUtil;
+import edu.usc.marshall.centralis22.util.RequestResponseEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -18,14 +21,16 @@ import java.util.Map;
 @Component
 public class WebSocketAPIHandler extends TextWebSocketHandler {
 
-    private final RequestDispatcher dispatcher;
+    private UserPersistenceService ups;
+    private RequestDispatcher dispatcher;
 
     /**
-     * Receives a message, parses it into a map according to the API,
-     * and forwards the content to a handler.
+     * The handler mimics the functionality of a {@code RestController}
+     * It receives a message, parses the message into a map according,
+     * and forwards the content to a {@code RequestHandler}.
      *
-     * <p>The handler handles server-client I/O. In addition, it checks
-     * JSON parsing errors, and ensures that a response can be made.
+     * <p>The handler is responsible for server-client I/O. In addition,
+     * it checks JSON parsing errors, and ensures that a response is returned.
      */
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
@@ -37,19 +42,20 @@ public class WebSocketAPIHandler extends TextWebSocketHandler {
         RequestResponseEntity rre = new RequestResponseEntity();
 
         try {
+            SimUser user = ups.getUser(session.getId());
             Map<String, Object> data = JacksonUtil.toMap(message.getPayload());
             int respondId = (int)data.get("request_id");
             rre.setRespondId(respondId);
-            dispatcher.dispatch(data, rre);
+            dispatcher.dispatch(user, data, rre);
         }
         catch(JsonProcessingException jpe) {
-            logger.warn("JPE: " + jpe.getMessage());
+            logger.warn("JPE Message: " + message.getPayload());
             rre
                     .setStatusCode(400)
                     .setContent("JSON processing error.");
         }
         catch(Exception e) {
-            logger.error("E: " + e.getMessage());
+            logger.error("E Message: " + message.getPayload());
             e.printStackTrace(System.err);
             rre
                     .setStatusCode(500)
@@ -60,8 +66,25 @@ public class WebSocketAPIHandler extends TextWebSocketHandler {
         session.sendMessage(msg);
     }
 
-    public WebSocketAPIHandler(
-            RequestDispatcher dispatcher) {
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        super.afterConnectionEstablished(session);
+        ups.addUser(session.getId());
+    }
+
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        super.afterConnectionClosed(session, status);
+        ups.removeUser(session.getId());
+    }
+
+    @Autowired
+    public void setDispatcher(RequestDispatcher dispatcher) {
         this.dispatcher = dispatcher;
+    }
+
+    @Autowired
+    public void setUps(UserPersistenceService ups) {
+        this.ups = ups;
     }
 }

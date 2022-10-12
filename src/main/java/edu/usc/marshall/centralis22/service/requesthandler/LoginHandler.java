@@ -1,6 +1,9 @@
 package edu.usc.marshall.centralis22.service.requesthandler;
 
+import edu.usc.marshall.centralis22.model.SimUser;
+import edu.usc.marshall.centralis22.security.UserAuthService;
 import edu.usc.marshall.centralis22.util.RequestResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -8,18 +11,30 @@ import java.util.Map;
 @Service
 public class LoginHandler implements RequestHandler {
 
+    private UserAuthService uas;
+
+    /**
+     * Login. See authenticateUser().
+     * TODO: Add constraints for team names.
+     * TODO: Add ability for instructor to remove teams.
+     */
     @Override
-    public void handle(Object content, RequestResponseEntity rre) {
+    public void handle(SimUser user, Object content, RequestResponseEntity rre) {
         Map<String, Object> loginContent = (Map<String, Object>)content;
 
-        /*
-        int respond = ups.authenticateUser(
+        int respond = uas.authenticateUser(
+                user,
                 (String)loginContent.get("user_type"),
                 (String)loginContent.get("user_name"),
                 (String)loginContent.get("user_pswd"),
                 Integer.parseInt((String)loginContent.get("session_id"))
-        );*/
+        );
 
-        rre.setStatusCode(200);
+        rre.setStatusCode(respond);
+    }
+
+    @Autowired
+    public void setUas(UserAuthService uas) {
+        this.uas = uas;
     }
 }

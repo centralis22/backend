@@ -1,92 +1,58 @@
 package edu.usc.marshall.centralis22.security;
 
 import edu.usc.marshall.centralis22.model.Instructor;
-import edu.usc.marshall.centralis22.model.Session;
+import edu.usc.marshall.centralis22.model.SimSession;
+import edu.usc.marshall.centralis22.model.SimUser;
 import edu.usc.marshall.centralis22.model.Team;
 import edu.usc.marshall.centralis22.repository.InstructorRepository;
 import edu.usc.marshall.centralis22.repository.SessionRepository;
 import edu.usc.marshall.centralis22.repository.TeamRepository;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Temporary object to store user information.
+ * The {@code UserPersistenceService} maps each {@code WebSocketSession},
+ * using its unique session ID, to a {@link SimUser}. A user may connect
+ * to the server through multiple sessions, e.g. by opening multiple
+ * browser tabs, but each session will have only one user.
  */
-@Component
+@Service
 public class UserPersistenceService {
 
-    private final InstructorRepository insr;
-    private final TeamRepository teamr;
-    private final SessionRepository sessr;
+    /**
+     * Maps each {@code sessionId} to a {@link SimUser}.
+     */
+    private final ConcurrentHashMap<String, SimUser> sessionMap =
+            new ConcurrentHashMap<>();
 
-    private String userName = "unauthorized1";
-    private String userType = "unauthorized";
-    private int sessionId = 0;
-
-    public int authenticateUser(
-            String userType,
-            String userName,
-            String userPswd,
-            int sessionId) {
-
-        // Error finding session
-        Session session = sessr.findBySeid(sessionId);
-        if(session == null) {
-            return 400;
-        }
-
-        if(userType.equals("instructor")) {
-            Instructor instructor = insr.findByUserName(userName);
-            // Error finding username
-            if(instructor == null
-                    || !userPswd.equals(instructor.getPassword())) {
-                return 403;
-            }
-            // Success
-            this.userName = userName;
-            this.userType = "instructor";
-            return 200;
-        }
-
-        // API mismatch, student == team
-        if(userType.equals("student")) {
-            Team team = teamr.findBySeidAndTeamName(sessionId, userName);
-            if(team == null) {
-                team = new Team(42, sessionId, userName);
-                teamr.save(team);
-            }
-            // Always success
-            this.userName = userName;
-            this.userType = "team";
-            return 200;
-        }
-
-        return 400;
+    /**
+     * Adds a placeholder {@link SimUser} when a new {@code WebSocketSession}
+     * is opened.
+     *
+     * @param sessionId {@code WebSocketSession} ID.
+     */
+    public void addUser(String sessionId) {
+        sessionMap.putIfAbsent(sessionId, new SimUser());
     }
 
-    public boolean isInstructor() {
-        return userType.equals("instructor");
+    /**
+     * Retrieves the {@link SimUser} of a {@code WebSocketSession}.
+     *
+     * @param sessionId {@code WebSocketSession} ID.
+     * @return {@link SimUser}
+     */
+    public SimUser getUser(String sessionId) {
+        return sessionMap.get(sessionId);
     }
 
-    public boolean isStudent() {
-        return userType.equals("team");
-    }
-
-    public int getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(int sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public UserPersistenceService(
-            InstructorRepository insr,
-            TeamRepository teamr,
-            SessionRepository sessr) {
-        this.insr = insr;
-        this.teamr = teamr;
-        this.sessr = sessr;
+    /**
+     * Removes the  map entry when a {@code WebSocketSession} has been closed.
+     *
+     * @param sessionId {@code WebSocketSession} ID.
+     */
+    public void removeUser(String sessionId) {
+        sessionMap.remove(sessionId);
     }
 }
