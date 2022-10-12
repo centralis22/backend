@@ -29,10 +29,10 @@ CREATE TABLE `instructor`  (
 ) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
--- Table structure for simSession
+-- Table structure for session
 -- ----------------------------
-DROP TABLE IF EXISTS `simSession`;
-CREATE TABLE `simSession`  (
+DROP TABLE IF EXISTS `session`;
+CREATE TABLE `session`  (
   `SEID` int(0) NOT NULL,
   `DATE` datetime(0) NULL DEFAULT NULL,
   `STAGE` int(0) NULL DEFAULT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE `survey_q`  (
   `QUESTION` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
   PRIMARY KEY (`SQID`) USING BTREE,
   INDEX `SEID`(`SEID`) USING BTREE,
-  CONSTRAINT `SEID` FOREIGN KEY (`SEID`) REFERENCES `simSession` (`SEID`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  CONSTRAINT `SEID` FOREIGN KEY (`SEID`) REFERENCES `session` (`SEID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
@@ -79,7 +79,7 @@ CREATE TABLE `team`  (
   PRIMARY KEY (`TMID`) USING BTREE,
   INDEX `TMID`(`TMID`) USING BTREE,
   INDEX `SEID_s`(`SEID`) USING BTREE,
-  CONSTRAINT `SEID_s` FOREIGN KEY (`SEID`) REFERENCES `simSession` (`SEID`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  CONSTRAINT `SEID_s` FOREIGN KEY (`SEID`) REFERENCES `session` (`SEID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
 SET FOREIGN_KEY_CHECKS = 1;
