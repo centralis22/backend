@@ -16,8 +16,8 @@ import java.util.Map;
 @Service
 public class RequestDispatcher {
 
-    public LoginHandler loginHandler;
-    public CreateSessionHandler createSessionHandler;
+    private LoginHandler loginHandler;
+    private CreateSessionHandler createSessionHandler;
 
     /**
      * Calls the corresponding {@link RequestHandler} implementation based on

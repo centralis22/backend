@@ -26,8 +26,8 @@ public class WebSocketAPIHandler extends TextWebSocketHandler {
 
     /**
      * The handler mimics the functionality of a {@code RestController}
-     * It receives a message, parses the message into a map according,
-     * and forwards the content to a {@code RequestHandler}.
+     * It receives a message, parses the message into a map, and forwards
+     * the content to a {@code RequestHandler}.
      *
      * <p>The handler is responsible for server-client I/O. In addition,
      * it checks JSON parsing errors, and ensures that a response is returned.
@@ -42,7 +42,7 @@ public class WebSocketAPIHandler extends TextWebSocketHandler {
         RequestResponseEntity rre = new RequestResponseEntity();
 
         try {
-            SimUser user = ups.getUser(session.getId());
+            SimUser user = ups.getUser(session);
             Map<String, Object> data = JacksonUtil.toMap(message.getPayload());
             int respondId = (int)data.get("request_id");
             rre.setRespondId(respondId);
@@ -66,16 +66,23 @@ public class WebSocketAPIHandler extends TextWebSocketHandler {
         session.sendMessage(msg);
     }
 
+    /**
+     * A {@link SimUser} should be added whenever a new connection is made.
+     */
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
-        ups.addUser(session.getId());
+        ups.addUser(session);
     }
 
+    /**
+     * The corresponding {@link SimUser} should be removed when its connection
+     * is closed.
+     */
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         super.afterConnectionClosed(session, status);
-        ups.removeUser(session.getId());
+        ups.removeUser(session);
     }
 
     @Autowired

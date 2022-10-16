@@ -16,9 +16,10 @@ public class UserAuthService {
     private final SessionRepository sessr;
     private final InstructorRepository instr;
     private final TeamRepository teamr;
+    private final UserPersistenceService ups;
 
     /**
-     * Authenticates {@link SimUser}.
+     * Authenticates a {@link SimUser}.
      *
      * <p>All users must join a valid session. For instructors, their username
      * and password must match. For teams, only their username is required. A
@@ -28,7 +29,7 @@ public class UserAuthService {
      * @param userType instructor/student.
      * @param userName
      * @param userPswd
-     * @param sessionId Simulation session ID. A server-generated 6-digit number.
+     * @param sessionId Simulation ID. A server-generated 6-digit number.
      * @return 200, on auth success. 400, on non-existent session or userType.
      *  403, on failed instructor credentials.
      */
@@ -53,9 +54,8 @@ public class UserAuthService {
                 return 403;
             }
             // Success
-            user.setUserName(userName);
-            user.setUserType("instructor");
-            user.setSessionId(sessionId);
+            user.registerCredentials(userName, "instructor", sessionId);
+            ups.addUserToSession(user, sessionId);
             return 200;
         }
 
@@ -67,9 +67,8 @@ public class UserAuthService {
                 teamr.save(team);
             }
             // Always success
-            user.setUserName(userName);
-            user.setUserType("team");
-            user.setSessionId(sessionId);
+            user.registerCredentials(userName, "team", sessionId);
+            ups.addUserToSession(user, sessionId);
             return 200;
         }
 
@@ -80,9 +79,11 @@ public class UserAuthService {
     public UserAuthService(
             SessionRepository sessr,
             InstructorRepository instr,
-            TeamRepository teamr) {
+            TeamRepository teamr,
+            UserPersistenceService ups) {
         this.sessr = sessr;
         this.instr = instr;
         this.teamr = teamr;
+        this.ups = ups;
     }
 }

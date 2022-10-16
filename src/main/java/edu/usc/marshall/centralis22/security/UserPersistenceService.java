@@ -1,58 +1,92 @@
 package edu.usc.marshall.centralis22.security;
 
-import edu.usc.marshall.centralis22.model.Instructor;
-import edu.usc.marshall.centralis22.model.SimSession;
 import edu.usc.marshall.centralis22.model.SimUser;
-import edu.usc.marshall.centralis22.model.Team;
-import edu.usc.marshall.centralis22.repository.InstructorRepository;
-import edu.usc.marshall.centralis22.repository.SessionRepository;
-import edu.usc.marshall.centralis22.repository.TeamRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.WebSocketSession;
+import edu.usc.marshall.centralis22.handler.WebSocketAPIHandler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * The {@code UserPersistenceService} maps each {@code WebSocketSession},
- * using its unique session ID, to a {@link SimUser}. A user may connect
- * to the server through multiple sessions, e.g. by opening multiple
- * browser tabs, but each session will have only one user.
+ * {@code UserPersistenceService} manages users that are connected to the
+ * "/api" endpoint.
+ *
+ * <p>For each {@link WebSocketSession} connected to "/api", a new {@link SimUser}
+ * should be created. A user may connect to the server through multiple
+ * sessions, e.g. by opening multiple browser tabs, but each session will
+ * have only one user.
  */
 @Service
 public class UserPersistenceService {
 
     /**
-     * Maps each {@code sessionId} to a {@link SimUser}.
+     * Maps each {@link WebSocketSession}'s ID to a {@link SimUser}.
      */
-    private final ConcurrentHashMap<String, SimUser> sessionMap =
+    private final ConcurrentHashMap<String, SimUser> wsMap =
             new ConcurrentHashMap<>();
 
     /**
-     * Adds a placeholder {@link SimUser} when a new {@code WebSocketSession}
-     * is opened.
-     *
-     * @param sessionId {@code WebSocketSession} ID.
+     * Maps each simulation session ID to {@link SimUser} that belong
+     * to the session.
      */
-    public void addUser(String sessionId) {
-        sessionMap.putIfAbsent(sessionId, new SimUser());
+    private final ConcurrentHashMap<Integer, List<SimUser>> sessionMap =
+            new ConcurrentHashMap<>();
+
+    /**
+     * Adds a {@link SimUser}.
+     *
+     * @param wsAPI {@link WebSocketSession} connected to the "/api" endpoint.
+     */
+    public void addUser(WebSocketSession wsAPI) {
+        SimUser user = new SimUser(wsAPI);
+        wsMap.putIfAbsent(wsAPI.getId(), user);
     }
 
     /**
-     * Retrieves the {@link SimUser} of a {@code WebSocketSession}.
+     * Retrieves a {@link SimUser}.
      *
-     * @param sessionId {@code WebSocketSession} ID.
+     * @param wsAPI {@link WebSocketSession} connected to the "/api" endpoint.
      * @return {@link SimUser}
      */
-    public SimUser getUser(String sessionId) {
-        return sessionMap.get(sessionId);
+    public SimUser getUser(WebSocketSession wsAPI) {
+        return wsMap.get(wsAPI.getId());
     }
 
     /**
-     * Removes the  map entry when a {@code WebSocketSession} has been closed.
+     * Removes a {@link SimUser}.
      *
-     * @param sessionId {@code WebSocketSession} ID.
+     * @param wsAPI {@link WebSocketSession} connected to the "/api" endpoint.
      */
-    public void removeUser(String sessionId) {
-        sessionMap.remove(sessionId);
+    public void removeUser(WebSocketSession wsAPI) {
+        SimUser user = wsMap.remove(wsAPI.getId());
+        List<SimUser> sessionUsers = sessionMap.get(user.getSessionId());
+        sessionUsers.remove(user);
+    }
+
+    /**
+     * Adds a {@link SimUser} to a simulation session.
+     *
+     * @param user
+     * @param sessionId Simulation session ID.
+     */
+    public void addUserToSession(SimUser user, int sessionId) {
+        if(sessionMap.contains(sessionId)) {
+            sessionMap.get(sessionId).add(user);
+        }
+        else {
+            sessionMap.put(sessionId, new ArrayList<>(List.of(user)));
+        }
+    }
+
+    /**
+     * Retrieves all {@link SimUser} in a simulation session.
+     *
+     * @param sessionId Simulation session ID.
+     * @return List of {@link SimUser}.
+     */
+    public List<SimUser> getAllUsersInSession(int sessionId) {
+        return sessionMap.get(sessionId);
     }
 }
