@@ -47,24 +47,13 @@ public class UserAuthService {
         // Error finding session
         SimSession simSession = sessr.findBySeid(sessionId);
         if(simSession == null) {
-            logger.debug("Session: " + sessionId + " not found.");
+            logger.debug("Session: " + sessionId + " not found");
             return 400;
         }
 
         // Frontend API "admin", backend "instructor"
         if(userType.equals("admin")) {
-            Instructor instructor = instr.findByUserName(userName);
-            // Username password error
-            if(instructor == null
-                    || !instructor.getPassword().equals(userPswd)) {
-                logger.debug("Instructor 403");
-                return 403;
-            }
-            // Success
-            user.registerCredentials(userName, "instructor", sessionId);
-            ups.addUserToSession(user, sessionId);
-            logger.debug("Instructor 200");
-            return 200;
+            return authenticateInstructor(user, userName, userPswd, sessionId);
         }
 
         // Frontend API "student", backend "team"
@@ -82,6 +71,25 @@ public class UserAuthService {
         }
 
         return 400;
+    }
+
+    public int authenticateInstructor(
+            SimUser user,
+            String userName,
+            String userPswd,
+            int sessionId) {
+        Instructor instructor = instr.findByUserName(userName);
+        // Username password error
+        if(instructor == null
+                || !instructor.getPassword().equals(userPswd)) {
+            logger.debug("Instructor 403");
+            return 403;
+        }
+        // Success
+        user.registerCredentials(userName, "instructor", sessionId);
+        ups.addUserToSession(user, sessionId);
+        logger.debug("Instructor 200");
+        return 200;
     }
 
     @Autowired

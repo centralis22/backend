@@ -7,12 +7,14 @@ import edu.usc.marshall.centralis22.security.UserPersistenceService;
 import edu.usc.marshall.centralis22.util.BroadcastEntity;
 import edu.usc.marshall.centralis22.util.RequestResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.util.List;
 
+@Service
 public class AdvanceStageHandler implements RequestHandler {
 
     private SessionRepository sessr;

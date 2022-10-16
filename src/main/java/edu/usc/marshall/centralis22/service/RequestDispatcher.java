@@ -1,6 +1,7 @@
 package edu.usc.marshall.centralis22.service;
 
 import edu.usc.marshall.centralis22.model.SimUser;
+import edu.usc.marshall.centralis22.service.requesthandler.AdvanceStageHandler;
 import edu.usc.marshall.centralis22.service.requesthandler.CreateSessionHandler;
 import edu.usc.marshall.centralis22.service.requesthandler.LoginHandler;
 import edu.usc.marshall.centralis22.service.requesthandler.RequestHandler;
@@ -16,8 +17,19 @@ import java.util.Map;
 @Service
 public class RequestDispatcher {
 
+    private final RequestHandler defaultHandler
+            = (user, content, rre) -> rre
+            .setStatusCode(400)
+            .setContent("No such request.");
+
+    private final RequestHandler unauthorizedHandler
+            = (user, content, rre) -> rre
+            .setStatusCode(403)
+            .setContent("Require admin privileges or credentials mismatch.");
+
     private LoginHandler loginHandler;
     private CreateSessionHandler createSessionHandler;
+    private AdvanceStageHandler advanceStageHandler;
 
     /**
      * Calls the corresponding {@link RequestHandler} implementation based on
@@ -42,16 +54,18 @@ public class RequestDispatcher {
             case "create_session":
                 requestHandler = createSessionHandler;
                 break;
+            case "advance_stage":
+                requestHandler = requireInstructor(user, advanceStageHandler);
+                break;
             default:
-                requestHandler = (dUser, dContent, dRRE) -> {
-                    dRRE
-                            .setStatusCode(400)
-                            .setStatusMessage("Request type error.");
-                };
+                requestHandler = defaultHandler;
                 break;
         }
-
         requestHandler.handle(user, content, rre);
+    }
+
+    public RequestHandler requireInstructor(SimUser user, RequestHandler handler) {
+        return user.isInstructor() ? handler : unauthorizedHandler;
     }
 
     @Autowired
@@ -62,5 +76,10 @@ public class RequestDispatcher {
     @Autowired
     public void setCreateSessionHandler(CreateSessionHandler createSessionHandler) {
         this.createSessionHandler = createSessionHandler;
+    }
+
+    @Autowired
+    public void setAdvanceStageHandler(AdvanceStageHandler advanceStageHandler) {
+        this.advanceStageHandler = advanceStageHandler;
     }
 }

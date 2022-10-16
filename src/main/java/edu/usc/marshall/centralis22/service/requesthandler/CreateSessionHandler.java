@@ -3,18 +3,21 @@ package edu.usc.marshall.centralis22.service.requesthandler;
 import edu.usc.marshall.centralis22.model.SimSession;
 import edu.usc.marshall.centralis22.model.SimUser;
 import edu.usc.marshall.centralis22.repository.SessionRepository;
+import edu.usc.marshall.centralis22.security.UserAuthService;
 import edu.usc.marshall.centralis22.util.RequestResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class CreateSessionHandler implements RequestHandler {
 
     private SessionRepository sessr;
+    private UserAuthService uas;
 
     /**
      * Loads all existing session IDs from DB. Generate a new unique ID.
@@ -25,6 +28,22 @@ public class CreateSessionHandler implements RequestHandler {
      */
     @Override
     public void handle(SimUser user, Object content, RequestResponseEntity rre) {
+        Map<String, Object> csContent = (Map<String, Object>)content;
+
+        int authResult = uas.authenticateInstructor(
+                user,
+                (String)csContent.get("user_name"),
+                (String)csContent.get("user_pswd"),
+                // TODO: Fix dummy.
+                4242
+        );
+
+        if(authResult != 200) {
+            rre
+                    .setStatusCode(403);
+            return;
+        }
+
         List<Integer> seids = sessr.getAllSeid();
 
         int seid = -1;
@@ -46,5 +65,10 @@ public class CreateSessionHandler implements RequestHandler {
     @Autowired
     public void setSessr(SessionRepository sessr) {
         this.sessr = sessr;
+    }
+
+    @Autowired
+    public void setUas(UserAuthService uas) {
+        this.uas = uas;
     }
 }
