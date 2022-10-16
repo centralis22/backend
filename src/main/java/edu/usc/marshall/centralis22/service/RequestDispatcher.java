@@ -52,6 +52,8 @@ public class RequestDispatcher {
                 requestHandler = loginHandler;
                 break;
             case "create_session":
+                // create_session does not require the user to be logged in,
+                // but passes in credentials as parameters
                 requestHandler = createSessionHandler;
                 break;
             case "advance_stage":

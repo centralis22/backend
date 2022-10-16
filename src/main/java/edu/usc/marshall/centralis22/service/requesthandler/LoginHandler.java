@@ -22,15 +22,21 @@ public class LoginHandler implements RequestHandler {
     public void handle(SimUser user, Object content, RequestResponseEntity rre) {
         Map<String, Object> loginContent = (Map<String, Object>)content;
 
-        int respond = uas.authenticateUser(
-                user,
-                (String)loginContent.get("user_type"),
-                (String)loginContent.get("user_name"),
-                (String)loginContent.get("user_pswd"),
-                Integer.parseInt((String)loginContent.get("session_id"))
-        );
-
-        rre.setStatusCode(respond);
+        try {
+            int respond = uas.authenticateUser(
+                    user,
+                    (String) loginContent.get("user_type"),
+                    (String) loginContent.get("user_name"),
+                    (String) loginContent.get("user_pswd"),
+                    Integer.parseInt((String) loginContent.get("session_id"))
+            );
+            rre.setStatusCode(respond);
+        }
+        catch(NumberFormatException nfe) {
+            rre
+                    .setStatusCode(400)
+                    .setStatusMessage("Session ID error.");
+        }
     }
 
     @Autowired

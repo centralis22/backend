@@ -22,18 +22,19 @@ public class UserAuthService {
     private final TeamRepository teamr;
     private final UserPersistenceService ups;
 
+
+
     /**
      * Authenticates a {@link SimUser}.
      *
-     * <p>All users must join a valid session. For instructors, their username
-     * and password must match. For teams, only their username is required. A
-     * new team with the given username will be created if one is not found.
+     * <p>For teams, only their session and username is required. A new team with
+     * the given username will be created if one is not found.
      *
      * @param user
-     * @param userType instructor/student.
+     * @param userType frontend: admin/student.
      * @param userName
      * @param userPswd
-     * @param sessionId Simulation ID. A server-generated 6-digit number.
+     * @param sessionId Simulation session ID. A server-generated 6-digit number.
      * @return 200, on auth success. 400, on non-existent session or userType.
      *  403, on failed instructor credentials.
      */
@@ -51,12 +52,12 @@ public class UserAuthService {
             return 400;
         }
 
-        // Frontend API "admin", backend "instructor"
+        // Frontend API uses "admin", backend uses "instructor"
         if(userType.equals("admin")) {
             return authenticateInstructor(user, userName, userPswd, sessionId);
         }
 
-        // Frontend API "student", backend "team"
+        // Frontend API uses "student", backend uses "team"
         if(userType.equals("student")) {
             Team team = teamr.findBySeidAndTeamName(sessionId, userName);
             if(team == null) {
@@ -73,6 +74,15 @@ public class UserAuthService {
         return 400;
     }
 
+    /**
+     * Authenticates an {@link Instructor}.
+     *
+     * @param user
+     * @param userName
+     * @param userPswd
+     * @param sessionId Simulation session ID. A server-generated 6-digit number.
+     * @return 200, on auth success. 403, on failed instructor credentials.
+     */
     public int authenticateInstructor(
             SimUser user,
             String userName,

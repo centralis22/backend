@@ -34,13 +34,12 @@ public class CreateSessionHandler implements RequestHandler {
                 user,
                 (String)csContent.get("user_name"),
                 (String)csContent.get("user_pswd"),
-                // TODO: Fix dummy.
+                // Use dummy value.
                 4242
         );
 
         if(authResult != 200) {
-            rre
-                    .setStatusCode(403);
+            rre.setStatusCode(403);
             return;
         }
 
