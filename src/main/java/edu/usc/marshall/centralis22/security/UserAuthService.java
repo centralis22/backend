@@ -7,11 +7,15 @@ import edu.usc.marshall.centralis22.model.Team;
 import edu.usc.marshall.centralis22.repository.InstructorRepository;
 import edu.usc.marshall.centralis22.repository.SessionRepository;
 import edu.usc.marshall.centralis22.repository.TeamRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserAuthService {
+
+    private final Logger logger = LoggerFactory.getLogger(UserAuthService.class);
 
     private final SessionRepository sessr;
     private final InstructorRepository instr;
@@ -43,19 +47,23 @@ public class UserAuthService {
         // Error finding session
         SimSession simSession = sessr.findBySeid(sessionId);
         if(simSession == null) {
+            logger.debug("Session: " + sessionId + " not found.");
             return 400;
         }
 
-        if(userType.equals("instructor")) {
+        // Frontend API "admin", backend "instructor"
+        if(userType.equals("admin")) {
             Instructor instructor = instr.findByUserName(userName);
             // Username password error
             if(instructor == null
                     || !instructor.getPassword().equals(userPswd)) {
+                logger.debug("Instructor 403");
                 return 403;
             }
             // Success
             user.registerCredentials(userName, "instructor", sessionId);
             ups.addUserToSession(user, sessionId);
+            logger.debug("Instructor 200");
             return 200;
         }
 
@@ -69,6 +77,7 @@ public class UserAuthService {
             // Always success
             user.registerCredentials(userName, "team", sessionId);
             ups.addUserToSession(user, sessionId);
+            logger.debug("Student 200");
             return 200;
         }
 

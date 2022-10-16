@@ -62,7 +62,9 @@ public class UserPersistenceService {
     public void removeUser(WebSocketSession wsAPI) {
         SimUser user = wsMap.remove(wsAPI.getId());
         List<SimUser> sessionUsers = sessionMap.get(user.getSessionId());
-        sessionUsers.remove(user);
+        if(sessionUsers != null) {
+            sessionUsers.remove(user);
+        }
     }
 
     /**
