@@ -48,7 +48,6 @@ public class RequestResponseEntity {
 
     @Override
     public String toString() {
-        // TODO: Return according to API
         try {
             return JacksonUtil.objectMapper().writeValueAsString(this);
         }

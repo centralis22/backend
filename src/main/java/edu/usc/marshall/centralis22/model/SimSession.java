@@ -22,6 +22,18 @@ public class SimSession {
         this.stage = stage;
     }
 
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public int getStage() {
+        return stage;
+    }
+
+    public void setStage(int stage) {
+        this.stage = stage;
+    }
+
     public SimSession() {
     }
 }

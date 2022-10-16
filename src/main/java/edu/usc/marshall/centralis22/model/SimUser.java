@@ -33,6 +33,10 @@ public class SimUser {
         return this.userType.equals("instructor");
     }
 
+    public WebSocketSession getWebSocketAPISession() {
+        return wsAPI;
+    }
+
     public void registerCredentials(String userName, String userType, int sessionId) {
         this.userName = userName;
         this.userType = userType;
