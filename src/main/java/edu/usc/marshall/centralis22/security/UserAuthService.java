@@ -22,8 +22,6 @@ public class UserAuthService {
     private final TeamRepository teamr;
     private final UserPersistenceService ups;
 
-
-
     /**
      * Authenticates a {@link SimUser}.
      *

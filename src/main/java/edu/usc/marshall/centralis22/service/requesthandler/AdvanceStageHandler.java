@@ -3,9 +3,12 @@ package edu.usc.marshall.centralis22.service.requesthandler;
 import edu.usc.marshall.centralis22.model.SimSession;
 import edu.usc.marshall.centralis22.model.SimUser;
 import edu.usc.marshall.centralis22.repository.SessionRepository;
+import edu.usc.marshall.centralis22.security.UserAuthService;
 import edu.usc.marshall.centralis22.security.UserPersistenceService;
 import edu.usc.marshall.centralis22.util.BroadcastEntity;
 import edu.usc.marshall.centralis22.util.RequestResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -16,6 +19,8 @@ import java.util.List;
 
 @Service
 public class AdvanceStageHandler implements RequestHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(AdvanceStageHandler.class);
 
     private SessionRepository sessr;
     private UserPersistenceService ups;
@@ -31,7 +36,7 @@ public class AdvanceStageHandler implements RequestHandler {
         rre.setStatusCode(200);
 
         SimSession session = sessr.findBySeid(user.getSessionId());
-        int stage = Integer.parseInt((String)content);
+        int stage = (int)content;
         stage = stage == -1 ? session.getStage() + 1 : stage;
         session.setStage(stage);
         sessr.save(session);
@@ -39,11 +44,14 @@ public class AdvanceStageHandler implements RequestHandler {
         BroadcastEntity bre = new BroadcastEntity("advance_stage", stage);
         List<SimUser> sessionUsers = ups.getAllUsersInSession(user.getSessionId());
         for(SimUser sessionUser : sessionUsers) {
+
             WebSocketSession wsAPI = sessionUser.getWebSocketAPISession();
             try {
+                logger.debug("Sent to: " + wsAPI.getId() + " Content: " + bre);
                 wsAPI.sendMessage(new TextMessage(bre.toString()));
             }
             catch(IOException ioe) {
+                ioe.printStackTrace(System.err);
                 rre.setStatusCode(500);
             }
         }

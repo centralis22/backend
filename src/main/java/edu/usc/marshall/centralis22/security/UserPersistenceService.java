@@ -1,6 +1,8 @@
 package edu.usc.marshall.centralis22.security;
 
 import edu.usc.marshall.centralis22.model.SimUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 import edu.usc.marshall.centralis22.handler.WebSocketAPIHandler;
@@ -20,6 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Service
 public class UserPersistenceService {
+
+    private final Logger logger = LoggerFactory.getLogger(UserPersistenceService.class);
 
     /**
      * Maps each {@link WebSocketSession}'s ID to a {@link SimUser}.
@@ -75,9 +79,11 @@ public class UserPersistenceService {
      */
     public void addUserToSession(SimUser user, int sessionId) {
         if(sessionMap.contains(sessionId)) {
+            logger.debug("Session " + sessionId + " added " + user.getUserName());
             sessionMap.get(sessionId).add(user);
         }
         else {
+            logger.debug("Session " + sessionId + " added initial " + user.getUserName());
             sessionMap.put(sessionId, new ArrayList<>(List.of(user)));
         }
     }
