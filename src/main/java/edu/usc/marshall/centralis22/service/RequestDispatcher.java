@@ -4,7 +4,7 @@ import edu.usc.marshall.centralis22.model.SimUser;
 import edu.usc.marshall.centralis22.service.requesthandler.AdvanceStageHandler;
 import edu.usc.marshall.centralis22.service.requesthandler.CreateSessionHandler;
 import edu.usc.marshall.centralis22.service.requesthandler.LoginHandler;
-import edu.usc.marshall.centralis22.service.requesthandler.RequestHandler;
+import edu.usc.marshall.centralis22.service.requesthandler.AbstractRequestHandler;
 import edu.usc.marshall.centralis22.util.RequestResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,17 +12,17 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
- * Wrapper of {@link RequestHandler}. Sorts each request by type.
+ * Wrapper of {@link AbstractRequestHandler}. Sorts each request by type.
  */
 @Service
 public class RequestDispatcher {
 
-    private final RequestHandler defaultHandler
+    private final AbstractRequestHandler defaultHandler
             = (user, content, rre) -> rre
             .setStatusCode(400)
             .setContent("No such request.");
 
-    private final RequestHandler unauthorizedHandler
+    private final AbstractRequestHandler unauthorizedHandler
             = (user, content, rre) -> rre
             .setStatusCode(403)
             .setContent("Require admin privileges or credentials mismatch.");
@@ -32,7 +32,7 @@ public class RequestDispatcher {
     private AdvanceStageHandler advanceStageHandler;
 
     /**
-     * Calls the corresponding {@link RequestHandler} implementation based on
+     * Calls the corresponding {@link AbstractRequestHandler} implementation based on
      * {@code request}. The data must be in compliance with the API. If not,
      * an exception will be thrown, failing the request.
      *
@@ -42,7 +42,7 @@ public class RequestDispatcher {
      */
     public void dispatch(SimUser user, Map<String, Object> data, RequestResponseEntity rre) {
 
-        RequestHandler requestHandler;
+        AbstractRequestHandler requestHandler;
 
         String request = (String)data.get("request");
         Object content = data.get("content");
@@ -66,7 +66,7 @@ public class RequestDispatcher {
         requestHandler.handle(user, content, rre);
     }
 
-    public RequestHandler requireInstructor(SimUser user, RequestHandler handler) {
+    public AbstractRequestHandler requireInstructor(SimUser user, AbstractRequestHandler handler) {
         return user.isInstructor() ? handler : unauthorizedHandler;
     }
 

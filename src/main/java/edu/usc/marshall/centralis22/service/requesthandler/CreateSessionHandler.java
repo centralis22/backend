@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
-public class CreateSessionHandler implements RequestHandler {
+public class CreateSessionHandler implements AbstractRequestHandler {
 
     private SessionRepository sessr;
     private UserAuthService uas;

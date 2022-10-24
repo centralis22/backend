@@ -36,8 +36,7 @@ public class WebSocketAPIHandler extends TextWebSocketHandler {
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
         // logger must be in method-scope to be thread safe.
         Logger logger = LoggerFactory.getLogger(WebSocketAPIHandler.class);
-        logger.debug(session.getId()+ ": " + message);
-        logger.debug(message.getPayload());
+        logger.debug(session.getId() + " receive" + message.getPayload());
 
         // RequestResponseEntity passed-by-reference to concrete handlers.
         RequestResponseEntity rre = new RequestResponseEntity();

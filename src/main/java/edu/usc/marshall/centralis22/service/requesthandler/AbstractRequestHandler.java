@@ -6,7 +6,7 @@ import edu.usc.marshall.centralis22.util.RequestResponseEntity;
 /**
  * Interface for concrete {@code RequestHandler} implementations.
  */
-public interface RequestHandler {
+public interface AbstractRequestHandler {
 
     /**
      * Handles the request.

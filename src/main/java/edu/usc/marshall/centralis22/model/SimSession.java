@@ -26,6 +26,10 @@ public class SimSession {
         return date;
     }
 
+    public int getSeid() {
+        return seid;
+    }
+
     public int getStage() {
         return stage;
     }

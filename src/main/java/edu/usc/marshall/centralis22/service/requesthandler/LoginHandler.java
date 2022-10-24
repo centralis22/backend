@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 @Service
-public class LoginHandler implements RequestHandler {
+public class LoginHandler implements AbstractRequestHandler {
 
     private UserAuthService uas;
 

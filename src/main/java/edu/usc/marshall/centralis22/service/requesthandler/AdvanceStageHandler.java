@@ -3,7 +3,6 @@ package edu.usc.marshall.centralis22.service.requesthandler;
 import edu.usc.marshall.centralis22.model.SimSession;
 import edu.usc.marshall.centralis22.model.SimUser;
 import edu.usc.marshall.centralis22.repository.SessionRepository;
-import edu.usc.marshall.centralis22.security.UserAuthService;
 import edu.usc.marshall.centralis22.security.UserPersistenceService;
 import edu.usc.marshall.centralis22.util.BroadcastEntity;
 import edu.usc.marshall.centralis22.util.RequestResponseEntity;
@@ -18,7 +17,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
-public class AdvanceStageHandler implements RequestHandler {
+public class AdvanceStageHandler implements AbstractRequestHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AdvanceStageHandler.class);
 
@@ -41,14 +40,17 @@ public class AdvanceStageHandler implements RequestHandler {
         session.setStage(stage);
         sessr.save(session);
 
+        logger.debug("Session " + session.getSeid() + " set stage " + session.getStage());
+
         BroadcastEntity bre = new BroadcastEntity("advance_stage", stage);
         List<SimUser> sessionUsers = ups.getAllUsersInSession(user.getSessionId());
         for(SimUser sessionUser : sessionUsers) {
 
             WebSocketSession wsAPI = sessionUser.getWebSocketAPISession();
             try {
-                logger.debug("Sent to: " + wsAPI.getId() + " Content: " + bre);
                 wsAPI.sendMessage(new TextMessage(bre.toString()));
+
+                logger.debug(wsAPI.getId() + " broadcast" + bre);
             }
             catch(IOException ioe) {
                 ioe.printStackTrace(System.err);

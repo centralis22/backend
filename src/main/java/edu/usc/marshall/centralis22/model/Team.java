@@ -14,6 +14,10 @@ public class Team {
     @Column(name = "teamname")
     String teamName;
 
+    public int getTmid() {
+        return tmid;
+    }
+
     public Team(int tmid, int seid, String teamName) {
         this.tmid = tmid;
         this.seid = seid;
