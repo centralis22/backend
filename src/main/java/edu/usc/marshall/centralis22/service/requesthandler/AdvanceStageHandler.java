@@ -25,14 +25,14 @@ public class AdvanceStageHandler implements AbstractRequestHandler {
     private UserPersistenceService ups;
 
     /**
-     * Advances a session's stage. If stage == -1, advance to next stage.
-     * Else, advance to specified stage. Broadcasts advancement to all users
-     * in session.
+     * Advances a session's stage.
+     *
+     * <p>If stage == -1, advance to next stage. Else, advance to specified stage.
+     * Broadcasts advancement to all users in session.
      * TODO: Valid stage check.
      */
     @Override
     public void handle(SimUser user, Object content, RequestResponseEntity rre) {
-        rre.setStatusCode(200);
 
         SimSession session = sessr.findBySeid(user.getSessionId());
         int stage = (int)content;
@@ -57,6 +57,8 @@ public class AdvanceStageHandler implements AbstractRequestHandler {
                 rre.setStatusCode(500);
             }
         }
+
+        rre.setStatusCode(200);
     }
 
     @Autowired
