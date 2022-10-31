@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * {@code UserPersistenceService} manages users that are connected to the
- * "/api" endpoint.
+ * {@code UserPersistenceService} manages network users that are connected to
+ * the WebSocket "/api" endpoint.
  *
  * <p>For each {@link WebSocketSession} connected to "/api", a new {@link SimUser}
  * should be created. A user may connect to the server through multiple

@@ -25,7 +25,7 @@ public class WebSocketAPIHandler extends TextWebSocketHandler {
     private RequestDispatcher dispatcher;
 
     /**
-     * The handler mimics the functionality of a {@code RestController}
+     * The handler mimics the functionality of a {@code RestController}.
      * It receives a message, parses the message into a map, and forwards
      * the content to a {@code RequestHandler}.
      *
