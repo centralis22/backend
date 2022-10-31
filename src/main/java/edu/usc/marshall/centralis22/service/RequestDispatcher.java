@@ -1,10 +1,7 @@
 package edu.usc.marshall.centralis22.service;
 
 import edu.usc.marshall.centralis22.model.SimUser;
-import edu.usc.marshall.centralis22.service.requesthandler.AdvanceStageHandler;
-import edu.usc.marshall.centralis22.service.requesthandler.CreateSessionHandler;
-import edu.usc.marshall.centralis22.service.requesthandler.LoginHandler;
-import edu.usc.marshall.centralis22.service.requesthandler.AbstractRequestHandler;
+import edu.usc.marshall.centralis22.service.requesthandler.*;
 import edu.usc.marshall.centralis22.util.RequestResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +27,7 @@ public class RequestDispatcher {
     private LoginHandler loginHandler;
     private CreateSessionHandler createSessionHandler;
     private AdvanceStageHandler advanceStageHandler;
+    private SubmitPollHandler submitPollHandler;
 
     /**
      * Calls the corresponding {@link AbstractRequestHandler} implementation based on
@@ -59,6 +57,9 @@ public class RequestDispatcher {
             case "advance_stage":
                 requestHandler = requireInstructor(user, advanceStageHandler);
                 break;
+            case "submit_poll":
+                requestHandler = submitPollHandler;
+                break;
             default:
                 requestHandler = defaultHandler;
                 break;
@@ -83,5 +84,10 @@ public class RequestDispatcher {
     @Autowired
     public void setAdvanceStageHandler(AdvanceStageHandler advanceStageHandler) {
         this.advanceStageHandler = advanceStageHandler;
+    }
+
+    @Autowired
+    public void setSubmitPollHandler(SubmitPollHandler submitPollHandler) {
+        this.submitPollHandler = submitPollHandler;
     }
 }
