@@ -6,6 +6,8 @@ import edu.usc.marshall.centralis22.model.Team;
 import edu.usc.marshall.centralis22.repository.SurveyRepository;
 import edu.usc.marshall.centralis22.repository.TeamRepository;
 import edu.usc.marshall.centralis22.util.RequestResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,9 @@ public class SubmitPollHandler implements AbstractRequestHandler {
 
     @Override
     public void handle(SimUser user, Object content, RequestResponseEntity rre) {
+
+        final Logger logger = LoggerFactory.getLogger(SubmitPollHandler.class);
+
         Map<String, Object> spContent = (Map<String, Object>)content;
         int pollNumber = (int)spContent.get("poll_no");
         List<String> pollContent = (List<String>)spContent.get("poll_response");
@@ -41,12 +46,16 @@ public class SubmitPollHandler implements AbstractRequestHandler {
             survey = new Survey(42, team.getTmid(), user.getSessionId(), pollNumber);
         }
 
-        // TODO: Update this.
+        logger.debug("Session " + user.getSessionId() + " user " + user.getUserName()
+                + " submitted survey");
+
+        // TODO: Update to allow any number of cases.
         survey.setQ1(pollContent.get(0));
         survey.setQ2(pollContent.get(1));
         survey.setQ3(pollContent.get(2));
         survey.setQ4(pollContent.get(3));
         survey.setQ5(pollContent.get(4));
+        survr.save(survey);
 
         rre.setStatusCode(200);
     }

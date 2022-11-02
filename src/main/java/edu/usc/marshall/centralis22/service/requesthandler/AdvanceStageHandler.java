@@ -19,8 +19,6 @@ import java.util.List;
 @Service
 public class AdvanceStageHandler implements AbstractRequestHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(AdvanceStageHandler.class);
-
     private SessionRepository sessr;
     private UserPersistenceService ups;
 
@@ -33,6 +31,8 @@ public class AdvanceStageHandler implements AbstractRequestHandler {
      */
     @Override
     public void handle(SimUser user, Object content, RequestResponseEntity rre) {
+
+        final Logger logger = LoggerFactory.getLogger(AdvanceStageHandler.class);
 
         SimSession session = sessr.findBySeid(user.getSessionId());
         int stage = (int)content;
