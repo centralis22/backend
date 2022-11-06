@@ -78,7 +78,7 @@ public class UserPersistenceService {
      * @param sessionId Simulation session ID.
      */
     public void addUserToSession(SimUser user, int sessionId) {
-        if(sessionMap.contains(sessionId)) {
+        if(sessionMap.containsKey(sessionId)) {
             logger.debug("Session " + sessionId + " added user " + user.getUserName());
             sessionMap.get(sessionId).add(user);
         }
