@@ -21,7 +21,6 @@ public class LoginHandler implements AbstractRequestHandler {
     @Override
     public void handle(SimUser user, Object content, RequestResponseEntity rre) {
         Map<String, Object> loginContent = (Map<String, Object>)content;
-
         try {
             int respond = uas.authenticateUser(
                     user,

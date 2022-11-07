@@ -28,6 +28,7 @@ public class RequestDispatcher {
     private CreateSessionHandler createSessionHandler;
     private AdvanceStageHandler advanceStageHandler;
     private SubmitPollHandler submitPollHandler;
+    private DownloadResultsHandler downloadResultsHandler;
 
     /**
      * Calls the corresponding {@link AbstractRequestHandler} implementation based on
@@ -60,6 +61,9 @@ public class RequestDispatcher {
             case "submit_poll":
                 requestHandler = submitPollHandler;
                 break;
+            case "download_results":
+                requestHandler= downloadResultsHandler;
+                break;
             default:
                 requestHandler = defaultHandler;
                 break;
@@ -89,5 +93,10 @@ public class RequestDispatcher {
     @Autowired
     public void setSubmitPollHandler(SubmitPollHandler submitPollHandler) {
         this.submitPollHandler = submitPollHandler;
+    }
+
+    @Autowired
+    public void setDownloadResultsHandler(DownloadResultsHandler downloadResultsHandler) {
+        this.downloadResultsHandler = downloadResultsHandler;
     }
 }
