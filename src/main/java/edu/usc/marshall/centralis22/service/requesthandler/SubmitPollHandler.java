@@ -28,7 +28,7 @@ public class SubmitPollHandler implements AbstractRequestHandler {
         final Logger logger = LoggerFactory.getLogger(SubmitPollHandler.class);
 
         Map<String, Object> spContent = (Map<String, Object>)content;
-        int pollNumber = (int)spContent.get("poll_no");
+        int pollNumber = Integer.parseInt((String) spContent.get("poll_no"));
         List<String> pollContent = (List<String>)spContent.get("poll_response");
 
         // If current team has submitted a survey, update it. Else, create new.
