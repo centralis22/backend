@@ -66,7 +66,7 @@ public class SubmitPollHandler implements AbstractRequestHandler {
         rre.setStatusCode(200);
 
         BroadcastEntity bre = new BroadcastEntity(
-                "submit_poll",
+                "survey_progress",
                 List.of(pollNumber, user.getUserName())
         );
         List<SimUser> sessionUsers = ups.getAllUsersInSession(user.getSessionId());

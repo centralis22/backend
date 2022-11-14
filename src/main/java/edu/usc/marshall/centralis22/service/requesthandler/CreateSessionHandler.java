@@ -37,14 +37,12 @@ public class CreateSessionHandler implements AbstractRequestHandler {
                 // Use dummy value.
                 4242
         );
-
         if(authResult != 200) {
             rre.setStatusCode(403);
             return;
         }
 
         List<Integer> seids = sessr.getAllSeid();
-
         int seid = -1;
         while(seid == -1) {
             int randSeid = ThreadLocalRandom.current().nextInt(100_000, 1_000_000);
@@ -52,7 +50,6 @@ public class CreateSessionHandler implements AbstractRequestHandler {
                 seid = randSeid;
             }
         }
-
         SimSession simSession = new SimSession(seid, LocalDate.now(), 0);
         sessr.save(simSession);
 
