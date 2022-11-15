@@ -30,18 +30,6 @@ public class CreateSessionHandler implements AbstractRequestHandler {
     public void handle(SimUser user, Object content, RequestResponseEntity rre) {
         Map<String, Object> csContent = (Map<String, Object>)content;
 
-        int authResult = uas.authenticateInstructor(
-                user,
-                (String)csContent.get("user_name"),
-                (String)csContent.get("user_pswd"),
-                // Use dummy value.
-                4242
-        );
-        if(authResult != 200) {
-            rre.setStatusCode(403);
-            return;
-        }
-
         List<Integer> seids = sessr.getAllSeid();
         int seid = -1;
         while(seid == -1) {
@@ -50,6 +38,19 @@ public class CreateSessionHandler implements AbstractRequestHandler {
                 seid = randSeid;
             }
         }
+
+        int authResult = uas.authenticateInstructor(
+                user,
+                (String)csContent.get("user_name"),
+                (String)csContent.get("user_pswd"),
+                seid
+        );
+
+        if(authResult != 200) {
+            rre.setStatusCode(403);
+            return;
+        }
+
         SimSession simSession = new SimSession(seid, LocalDate.now(), 0);
         sessr.save(simSession);
 

@@ -79,11 +79,11 @@ public class UserPersistenceService {
     public void addUserToSession(SimUser user, int sessionId) {
         if(sessionMap.containsKey(sessionId)) {
             sessionMap.get(sessionId).add(user);
-            logger.debug("Session " + sessionId + " adds initial user " + user.getUserName());
+            logger.debug("Session " + sessionId + " adds user " + user.getUserName());
         }
         else {
             sessionMap.put(sessionId, new ArrayList<>(List.of(user)));
-            logger.debug("Session " + sessionId + " adds user " + user.getUserName());
+            logger.debug("Session " + sessionId + " adds initial user " + user.getUserName());
         }
     }
 
