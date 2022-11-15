@@ -26,14 +26,13 @@ public class UserPersistenceService {
     private final Logger logger = LoggerFactory.getLogger(UserPersistenceService.class);
 
     /**
-     * Maps each {@link WebSocketSession}'s ID to a {@link SimUser}.
+     * Maps each {@link WebSocketSession} ID to a {@link SimUser}.
      */
     private final ConcurrentHashMap<String, SimUser> wsMap =
             new ConcurrentHashMap<>();
 
     /**
-     * Maps each simulation session ID to {@link SimUser} that belong
-     * to the session.
+     * Maps each {@code SimSession} to all of its {@link SimUser}.
      */
     private final ConcurrentHashMap<Integer, List<SimUser>> sessionMap =
             new ConcurrentHashMap<>();
@@ -72,26 +71,26 @@ public class UserPersistenceService {
     }
 
     /**
-     * Adds a {@link SimUser} to a simulation session.
+     * Adds a {@link SimUser} to a {@code SimSession}.
      *
      * @param user
-     * @param sessionId Simulation session ID.
+     * @param sessionId {@code SimSession} sessionID.
      */
     public void addUserToSession(SimUser user, int sessionId) {
         if(sessionMap.containsKey(sessionId)) {
-            logger.debug("Session " + sessionId + " added user " + user.getUserName());
             sessionMap.get(sessionId).add(user);
+            logger.debug("Session " + sessionId + " adds initial user " + user.getUserName());
         }
         else {
-            logger.debug("Session " + sessionId + " added initial user " + user.getUserName());
             sessionMap.put(sessionId, new ArrayList<>(List.of(user)));
+            logger.debug("Session " + sessionId + " adds user " + user.getUserName());
         }
     }
 
     /**
-     * Retrieves all {@link SimUser} in a simulation session.
+     * Retrieves all {@link SimUser} in a {@code SimSession}.
      *
-     * @param sessionId Simulation session ID.
+     * @param sessionId {@code SimSession} sessionID.
      * @return List of {@link SimUser}.
      */
     public List<SimUser> getAllUsersInSession(int sessionId) {

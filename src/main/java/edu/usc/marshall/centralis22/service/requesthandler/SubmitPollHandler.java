@@ -5,13 +5,19 @@ import edu.usc.marshall.centralis22.model.Survey;
 import edu.usc.marshall.centralis22.model.Team;
 import edu.usc.marshall.centralis22.repository.SurveyRepository;
 import edu.usc.marshall.centralis22.repository.TeamRepository;
+import edu.usc.marshall.centralis22.security.UserPersistenceService;
+import edu.usc.marshall.centralis22.util.BroadcastEntity;
 import edu.usc.marshall.centralis22.util.RequestResponseEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 @Service
@@ -20,7 +26,7 @@ public class SubmitPollHandler implements AbstractRequestHandler {
     private SurveyRepository survr;
     private TeamRepository teamr;
 
-    static final int NUM_QUESTIONS = 5;
+    private UserPersistenceService ups;
 
     @Override
     public void handle(SimUser user, Object content, RequestResponseEntity rre) {
@@ -58,6 +64,25 @@ public class SubmitPollHandler implements AbstractRequestHandler {
         survr.save(survey);
 
         rre.setStatusCode(200);
+
+        BroadcastEntity bre = new BroadcastEntity(
+                "survey_progress",
+                List.of(pollNumber, user.getUserName())
+        );
+        List<SimUser> sessionUsers = ups.getAllUsersInSession(user.getSessionId());
+        for(SimUser sessionUser : sessionUsers) {
+            if(sessionUser.isInstructor()) {
+                WebSocketSession wsAPI = sessionUser.getWebSocketAPISession();
+                try {
+                    wsAPI.sendMessage(new TextMessage(bre.toString()));
+                    logger.debug(wsAPI.getId() + " broadcast" + bre);
+                }
+                catch(IOException ioe) {
+                    ioe.printStackTrace(System.err);
+                    rre.setStatusCode(500);
+                }
+            }
+        }
     }
 
     @Autowired
@@ -68,5 +93,10 @@ public class SubmitPollHandler implements AbstractRequestHandler {
     @Autowired
     public void setTeamr(TeamRepository teamr) {
         this.teamr = teamr;
+    }
+
+    @Autowired
+    public void setUps(UserPersistenceService ups) {
+        this.ups = ups;
     }
 }
