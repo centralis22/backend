@@ -11,7 +11,6 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-
     <groupId>edu.usc.marshall</groupId>
     <artifactId>backend22</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -20,6 +19,24 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>src.main.java.edu.usc.marshall.centralis22.Application</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>springboot-jar</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <!-- Basic SpringBoot dependency -->
