@@ -253,8 +253,8 @@ def graph5(df, sessionID):
 def main():
     db = pymysql.connect(host='localhost',
                          port=3306,
-                         user='root',
-                         password='root',
+                         user='centralis',
+                         password='centralis',
                          database='centralis')
     cursor = db.cursor()
     sessionID = sys.argv[1]
